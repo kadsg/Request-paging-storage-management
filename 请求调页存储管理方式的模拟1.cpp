@@ -3,7 +3,7 @@
 int main(void) {
 	Paging p;
 	int switch_on;
-
+	
 	while (true) {
 		cout << endl << endl << endl << endl;
 		cout << "--------请求调页存储管理方式的模拟---------" << endl;

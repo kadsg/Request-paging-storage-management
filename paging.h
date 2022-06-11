@@ -27,11 +27,12 @@ public:
 		init();
 		
 	}
+
 	~Paging() {
 		free();
 	}
-
 private:
+	
 	/* 初始化 */
 	void init() {
 
@@ -63,12 +64,12 @@ private:
 
 		for (int i = 0; i < instructionNum; i += 4) {
 			
-			temp = rand() % instructionNum; // 生成地址范围为[0, instructionNum]的指令
+			temp = rand() % instructionNum; // 生成地址范围为[0, instructionNum - 1]的指令
 			instruction[i] = temp + 1; // 执行地址为temp + 1的指令
 			temp = rand() % (temp + 2); // 在前地址[0，temp + 1]中随机选取一条指令
 			instruction[i + 1] = temp; // 执行该指令
 			instruction[i + 2] = temp + 1; // 顺序执行地址为temp + 1的指令
-			temp = rand() % (instructionNum - (temp + 2)) + temp + 2; // 在后地址[temp + 2，instructionNum]中随机选取一条指令
+			temp = rand() % (instructionNum - (temp + 2)) + temp + 2; // 在后地址[temp + 2，instructionNum - 1]中随机选取一条指令
 			instruction[i + 3] = temp; // 执行
 		}
 	}
@@ -120,7 +121,7 @@ private:
 		}
 
 		if(algorithm == Algorithm::LRU) {
-			cout << endl << "上次使用：";
+			cout << endl << "时间间隔：";
 			for (int i = 0; i < pageNum; ++i) {
 				cout << block[i].lastVisit << '\t';
 			}
@@ -253,18 +254,18 @@ public:
 			cout << "执行第 " << i + 1 << " 条指令：" << instruction[i]
 				<< "，对应页号：" << pageID << endl;
 
-			printPage(pageNum, Algorithm::LRU);
-
 			// 如果该页在内存中
 			int location = pageLocation(pageID);
 			if (location != -1) {
 				// 更新页的访问时间
 				setLastVisitTime(block, pageNum, location);
+				printPage(pageNum, Algorithm::LRU);
 
 				cout << "该页在内存中的物理地址为：" << location;
 			}
 			// 如果该页不在内存中
 			else {
+				printPage(pageNum, Algorithm::LRU);
 				cout << "发生缺页！";
 
 				++failureNum;
@@ -277,6 +278,7 @@ public:
 
 					// 更新页的访问时间
 					setLastVisitTime(block, pageNum, freeBlockLocation);
+					printPage(pageNum, Algorithm::LRU);
 				}
 				else { // 需要选择一页换出
 					int index = least(block, pageNum);
@@ -295,10 +297,9 @@ public:
 					// 更新页的访问时间
 					setLastVisitTime(block, pageNum, index);
 
+					printPage(pageNum, Algorithm::LRU);
 					cout << "该页在内存中的物理地址为：" << pageLocation(pageID) << endl;
 				}	
-
-				printPage(pageNum, Algorithm::LRU);
 			}
 			cout << endl << endl;
 		}
